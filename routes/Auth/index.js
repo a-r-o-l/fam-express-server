@@ -32,7 +32,7 @@ router.post("/sign-in", async (req, res) => {
         session: foundAccount.session,
       },
       secret,
-      { expiresIn: "1h" }
+      { expiresIn: "10h" }
     );
 
     const refreshToken = jwt.sign({ _id: foundAccount._id }, refreshSecret, {
@@ -67,7 +67,7 @@ router.post("/re-sign-in/:id", async (req, res) => {
         session: foundAccount.session,
       },
       secret,
-      { expiresIn: "1h" }
+      { expiresIn: "10h" }
     );
 
     res.json({ accessToken });

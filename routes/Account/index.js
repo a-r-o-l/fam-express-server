@@ -107,7 +107,7 @@ router.put("/open-box/:id", async (req, res) => {
         session: session,
       },
       secret,
-      { expiresIn: "1h" }
+      { expiresIn: "10h" }
     );
 
     res.json({ accessToken });

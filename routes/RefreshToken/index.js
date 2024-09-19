@@ -43,7 +43,7 @@ router.post("/refresh-token", async (req, res) => {
         session: account.session,
       },
       secret,
-      { expiresIn: "1h" }
+      { expiresIn: "10h" }
     );
 
     res.json({ accessToken: newAccessToken });
