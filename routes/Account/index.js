@@ -1,8 +1,9 @@
 import { Router } from "express";
 import Account from "../../models/Account.js";
+import Session from "../../models/Session.js";
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
-config()
+config();
 
 const secret = process.env.JWT_SECRET;
 
@@ -10,16 +11,12 @@ const router = Router();
 
 router.post("/account", async (req, res) => {
   try {
-    const {
-      name,
-      password,
-      role
-    } = req.body;
+    const { name, password, role } = req.body;
     const newAccount = new Account({
       name,
       password,
-      role
-    })
+      role,
+    });
     await newAccount.save();
     res.json(newAccount);
   } catch (error) {
@@ -29,23 +26,19 @@ router.post("/account", async (req, res) => {
 
 router.put("/account/:id", async (req, res) => {
   try {
-    const {id} = req.params;
-    const {
-      name,
-      role,
-      session,
-      password,
-      profit
-    } = req.body;
+    const { id } = req.params;
+    const { name, role, session, password, profit } = req.body;
 
     const updateFields = {};
     if (name !== undefined) updateFields.name = name;
     if (role !== undefined) updateFields.role = role;
-    if (session !== undefined) updateFields.session = session;
     if (password !== undefined) updateFields.password = password;
     if (profit !== undefined) updateFields.profit = profit;
+    updateFields.session = session;
 
-    const account = await Account.findByIdAndUpdate(id, updateFields, { new: true });
+    const account = await Account.findByIdAndUpdate(id, updateFields, {
+      new: true,
+    });
     res.json(account);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -66,7 +59,7 @@ router.get("/accounts", async (req, res) => {
 router.get("/account/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const account = await Account.findById(id);
+    const account = await Account.findById(id).populate("session");
     res.json(account);
   } catch (error) {
     res.json({
@@ -89,22 +82,23 @@ router.delete("/account/:id", async (req, res) => {
 
 router.put("/open-box/:id", async (req, res) => {
   try {
-    const {id} = req.params;
-    const {
-      session
-    } = req.body;
+    const { id } = req.params;
+    const { session } = req.body;
 
     const updateFields = {};
     if (session !== undefined) updateFields.session = session;
 
-    const account = await Account.findByIdAndUpdate(id, updateFields, { new: true });
+    const account = await Account.findByIdAndUpdate(id, updateFields, {
+      new: true,
+    });
+    const foundSession = await Session.findById(session);
     const accessToken = jwt.sign(
       {
         _id: account._id,
         name: account.name || "",
         password: account.password,
         role: account.role,
-        session: session,
+        session: foundSession,
       },
       secret,
       { expiresIn: "10h" }

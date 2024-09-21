@@ -8,7 +8,7 @@ const router = Router();
 
 router.post("/sale", async (req, res) => {
   try {
-    const { amount, date, service, account } = req.body;
+    const { amount, date, service, account, session } = req.body;
     const foundService = await Service.findById({ _id: service });
     if (!foundService) {
       return res.status(404).json({ message: "No se encontro el servicio" });
@@ -24,6 +24,7 @@ router.post("/sale", async (req, res) => {
       date,
       service,
       account,
+      session,
     });
     await newSale.save();
     const foundAcoount = await Account.findById({ _id: account });
@@ -127,13 +128,14 @@ router.get("/sales/amount/:date/:accountId", async (req, res) => {
 router.put("/sale/:saleId", async (req, res) => {
   try {
     const { saleId } = req.params;
-    const { amount, date, service, account } = req.body;
+    const { amount, date, service, account, session } = req.body;
 
     const updateFields = {};
     if (amount !== undefined) updateFields.amount = amount;
     if (date !== undefined) updateFields.date = date;
     if (service !== undefined) updateFields.service = service;
     if (account !== undefined) updateFields.account = account;
+    if (session !== undefined) updateFields.session = session;
 
     const updatedSale = await Sale.findByIdAndUpdate(saleId, updateFields);
     res.json(updatedSale);
