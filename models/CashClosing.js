@@ -36,27 +36,27 @@ const cashColsingSchema = new Schema(
       type: Number,
     },
     total: {
-        type: Number,
-      },
+      type: Number,
+    },
     balance: {
       type: Number,
     },
     Profit: {
       type: Number,
     },
-    account:{
+    account: {
       type: Schema.Types.ObjectId,
       ref: "Account",
     },
-    sale_amount:{
+    sale_amount: {
       type: Number,
     },
-    change:{
+    change: {
       type: Number,
     },
-    date:{
-        type: Date
-      },
+    date: {
+      type: String,
+    },
   },
   {
     versionKey: false,

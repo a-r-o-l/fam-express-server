@@ -83,7 +83,9 @@ router.delete("/cash-closing/:id", async (req, res) => {
 
 router.get("/cashes-closing", async (req, res) => {
   try {
-    const cashClosing = await CashClosing.find().populate("account");
+    const cashClosing = await CashClosing.find()
+      .populate("account")
+      .sort({ createdAt: -1 });
     res.json(cashClosing);
   } catch (error) {
     res.json({
