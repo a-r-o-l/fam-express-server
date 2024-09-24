@@ -16,22 +16,8 @@ const accountSchema = new Schema(
       default: "user",
     },
     session: {
-      opening: {
-        type: Date,
-        default:null
-      },
-      closing: {
-        type: Date,
-        default:null
-      },
-      change: {
-        type: Number,
-        default: 0,
-      },
-      profit: {
-        type: Number,
-        default: 0,
-      },
+      type : Schema.Types.ObjectId,
+      ref: "Session",
     },
   },
   {

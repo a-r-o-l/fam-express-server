@@ -2,13 +2,14 @@ import { Router } from "express";
 import Sale from "../../models/Sale.js";
 import Account from "../../models/Account.js";
 import Service from "../../models/Service.js";
+import Session from "../../models/Session.js";
 import dayjs from "dayjs";
 
 const router = Router();
 
 router.post("/sale", async (req, res) => {
   try {
-    const { amount, date, service, account } = req.body;
+    const { amount, date, service, account, session } = req.body;
     const foundService = await Service.findById({ _id: service });
     if (!foundService) {
       return res.status(404).json({ message: "No se encontro el servicio" });
@@ -24,11 +25,12 @@ router.post("/sale", async (req, res) => {
       date,
       service,
       account,
+      session,
     });
     await newSale.save();
-    const foundAcoount = await Account.findById({ _id: account });
-    foundAcoount.session.profit += foundService.profit;
-    await foundAcoount.save();
+    const foundSession = await Session.findById({ _id: session });
+    foundSession.profit += foundService.profit;
+    await foundSession.save();
     res.json(newSale);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -98,26 +100,13 @@ router.get("/sales/:date/:accountId", async (req, res) => {
   }
 });
 
-router.get("/sales/amount/:date/:accountId", async (req, res) => {
+router.get("/sales/amount/:sessionId/:accountId", async (req, res) => {
   try {
-    if (req.params.date === undefined) {
-      return res.status(400).json({ message: "Fecha no proporcionada" });
-    }
-    const { date, accountId } = req.params;
-    const startDate = dayjs(date).startOf("day").toDate();
-    const endDate = dayjs(date).endOf("day").toDate();
+    const { sessionId, accountId } = req.params;
 
-    const match = {
-      account: accountId,
-      createdAt: {
-        $gte: startDate,
-        $lt: endDate,
-      },
-    };
-
-    const result2 = await Sale.find(match);
+    const result = await Sale.find({ session: sessionId, account: accountId });
     res.json({
-      totalAmount: result2.reduce((acc, sale) => acc + sale.amount, 0),
+      totalAmount: result.reduce((acc, sale) => acc + sale.amount, 0),
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -127,13 +116,14 @@ router.get("/sales/amount/:date/:accountId", async (req, res) => {
 router.put("/sale/:saleId", async (req, res) => {
   try {
     const { saleId } = req.params;
-    const { amount, date, service, account } = req.body;
+    const { amount, date, service, account, session } = req.body;
 
     const updateFields = {};
     if (amount !== undefined) updateFields.amount = amount;
     if (date !== undefined) updateFields.date = date;
     if (service !== undefined) updateFields.service = service;
     if (account !== undefined) updateFields.account = account;
+    if (session !== undefined) updateFields.session = session;
 
     const updatedSale = await Sale.findByIdAndUpdate(saleId, updateFields);
     res.json(updatedSale);
