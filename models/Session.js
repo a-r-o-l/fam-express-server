@@ -18,10 +18,14 @@ const sessionSchema = new Schema(
       type: Number,
       default: 0,
     },
-    date:{
-        type: String,
-        default: null,
-    }
+    date: {
+      type: String,
+      default: null,
+    },
+    account: {
+      type: Schema.Types.ObjectId,
+      ref: "Account",
+    },
   },
   {
     versionKey: false,

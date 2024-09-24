@@ -83,22 +83,30 @@ router.delete("/account/:id", async (req, res) => {
 router.put("/open-box/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { session } = req.body;
+    const { date, opening, change } = req.body;
 
-    const updateFields = {};
-    if (session !== undefined) updateFields.session = session;
-
-    const account = await Account.findByIdAndUpdate(id, updateFields, {
-      new: true,
+    const newSession = new Session({
+      date,
+      opening,
+      change,
+      account: id,
     });
-    const foundSession = await Session.findById(session);
+    await newSession.save();
+    const account = await Account.findByIdAndUpdate(
+      id,
+      {
+        session: newSession._id,
+      },
+      { new: true }
+    );
+
     const accessToken = jwt.sign(
       {
         _id: account._id,
         name: account.name || "",
         password: account.password,
         role: account.role,
-        session: foundSession,
+        session: newSession,
       },
       secret,
       { expiresIn: "10h" }
