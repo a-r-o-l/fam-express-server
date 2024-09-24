@@ -8,13 +8,17 @@ const saleSchema = new Schema(
     date: {
       type: Date,
     },
-    service:{
+    service: {
       type: Schema.Types.ObjectId,
       ref: "Service",
     },
-    account:{
+    account: {
       type: Schema.Types.ObjectId,
       ref: "Account",
+    },
+    session: {
+      type: Schema.Types.ObjectId,
+      ref: "Session",
     },
   },
   {

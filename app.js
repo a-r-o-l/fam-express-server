@@ -7,6 +7,7 @@ import serviceRoutes from "./routes/Services/index.js";
 import chargeRoutes from "./routes/Charge/index.js";
 import authRoutes from "./routes/Auth/index.js";
 import cashClosingRoutes from "./routes/CashClosing/index.js";
+import sessionRoutes from "./routes/Session/index.js";
 import refreshTokenRoutes from "./routes/RefreshToken/index.js";
 import authenticateToken from "./middlewares/authMiddleware.js";
 
@@ -24,6 +25,7 @@ app.use(authenticateToken,saleRoutes);
 app.use(authenticateToken,serviceRoutes);
 app.use(authenticateToken,chargeRoutes);
 app.use(authenticateToken,cashClosingRoutes);
+app.use(authenticateToken,sessionRoutes);
 
 
 

@@ -3,7 +3,7 @@ import Account from "../../models/Account.js";
 import RefreshToken from "../../models/RefreshToken.js";
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
-config()
+config();
 
 const secret = process.env.JWT_SECRET;
 const refreshSecret = process.env.REFRESH_SECRET;
@@ -12,16 +12,15 @@ const router = Router();
 
 router.post("/sign-in", async (req, res) => {
   try {
-    const {
-      name,
-      password,
-    } = req.body;
-    const foundAccount = await Account.findOne({ name });
+    const { name, password } = req.body;
+    const foundAccount = await Account.findOne({ name }).populate("session");
     if (!foundAccount) {
       return res.status(409).json({ message: "El usuario no existe" });
     }
     if (foundAccount.password !== password) {
-      return res.status(401).json({ message: "usuario o contraseña incorrecta" });
+      return res
+        .status(401)
+        .json({ message: "usuario o contraseña incorrecta" });
     }
     const accessToken = jwt.sign(
       {
@@ -54,7 +53,7 @@ router.post("/sign-in", async (req, res) => {
 router.post("/re-sign-in/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const foundAccount = await Account.findById(id);
+    const foundAccount = await Account.findById(id).populate("session");
     if (!foundAccount) {
       return res.status(409).json({ message: "El usuario no existe" });
     }
@@ -75,6 +74,5 @@ router.post("/re-sign-in/:id", async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 });
-
 
 export default router;

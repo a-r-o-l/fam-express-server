@@ -7,7 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node index.js",
     "startenv": "node --env-file=.env index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "local": "npx dotenv-cli -e .env.local -- node index.js",
+    "develop": "npx dotenv-cli -e .env.develop -- node index.js",
+    "production": "npx dotenv-cli -e .env.production -- node index.js"
   },
   "keywords": [],
   "author": "",
