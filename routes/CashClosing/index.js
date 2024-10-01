@@ -72,7 +72,6 @@ router.delete("/cash-closing/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const deletedCashClosing = await CashClosing.findByIdAndDelete(id);
-    console.log(deletedCashClosing);
     res.json(deletedCashClosing);
   } catch (error) {
     res.json({
