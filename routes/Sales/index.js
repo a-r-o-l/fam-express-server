@@ -1,6 +1,5 @@
 import { Router } from "express";
 import Sale from "../../models/Sale.js";
-import Account from "../../models/Account.js";
 import Service from "../../models/Service.js";
 import Session from "../../models/Session.js";
 import dayjs from "dayjs";
@@ -51,11 +50,20 @@ router.get("/sale", async (req, res) => {
 
 router.get("/sales/pagination", async (req, res) => {
   try {
+    const { service, account } = req.query;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
+    const query = {};
+    if (service && service !== "all") {
+      query.service = service;
+    }
 
-    const sales = await Sale.find()
+    if (account && account !== "all") {
+      query.account = account;
+    }
+
+    const sales = await Sale.find(query)
       .populate(["account", "service"])
       .sort({ createdAt: -1 })
       .skip(skip)

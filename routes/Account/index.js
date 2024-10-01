@@ -47,7 +47,13 @@ router.put("/account/:id", async (req, res) => {
 
 router.get("/accounts", async (req, res) => {
   try {
-    const accounts = await Account.find();
+    const { role } = req.query;
+    let accounts;
+    if (role === "all" || role === undefined) {
+      accounts = await Account.find();
+    } else {
+      accounts = await Account.find({ role });
+    }
     res.json(accounts);
   } catch (error) {
     res.json({
